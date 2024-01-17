@@ -108,3 +108,18 @@ TIP: You can also change the default image for all stages by putting the command
 ![](../Images/defaultimage.png)
 
 # 5. Test Deployment
+
+1. Add a new stage and job for deployment tests.
+
+![](../Images/stages.png)
+
+2. The job downloads the first page of the website and searches for the string "Congratulations"
+   
+![](../Images/testdeployment.png)
+
+![](../Images/alltestspast.png)
+
+3. Increase the speed by changing the image to alpine
+4. Therefore we also have to add the curl command a alpine does not know it
+
+![](../Images/alpinetest.png)

@@ -20,3 +20,15 @@
 
 [Static Website Project](Project1)<br>
 
+[Static Website Project - Predefined Environment Variables](predefined-environment-variables)<br>
+
+[Static Website Project - Caches](caches-and-build-speed)<br>
+
+[Static Website Project - Environments](staging-environment)<br>
+
+[Static Website Project - Creating Variables](creating-variables)<br>
+
+[Static Website Project - Manual Deployments](manual-deployments)<br>
+
+[Static Website Project - Merge Requests and Branches](merge-requests-and-branches)<br>
+

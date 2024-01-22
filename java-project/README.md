@@ -142,9 +142,9 @@ Use Amazon s3 to store the .jar file.
 
 ![](../Images2/unprotected.png)
 
-1.   Go to pipeline script
-2.   Create a deploy stage and a deploy job
-3.   In the script configure the instance and upload the .jar file to the bucket
+22.   Go to pipeline script
+23.   Create a deploy stage and a deploy job
+24.   In the script configure the instance and upload the .jar file to the bucket
 
 ![](../Images2/pipelinedeploy.png)
 
@@ -209,3 +209,104 @@ deploy:
     - aws elasticbeanstalk update-environment --application-name $APP_NAME --environment-name "production-1" --version-label=$CI_PIPELINE_IID
 
 ```
+### Keeping track of the app info
+
+We want to replace these variables...
+
+![](../Images2/postman.png)
+
+37. In the script use a sed command to replace the pipeline ID with an environment variable for the pipeline ID.
+38. Do the same command two more times to replace the commit ID and the branch.
+39. Run the pipeline
+40. Check postman for the application info and it should have changed...
+
+![](../Images2/postmanvariables.png)
+
+### Verifying Application version after deployment
+
+41. First we need to find the domain name, we can find this in a JSON file of application info.
+42. We need to parse the JSON file and extract the domain name from the CNAME property.
+43. To extract the info from JSON we need to get the script to download jq in the before_script
+44. Then pipe the info into jq and specifiy we are interested in CNAME.
+45. Use curl commands and then grep to search for the pipeline ID and also UP in the health endpoint. (this command uses the CNAME variable)
+46. Use a sleep command to give the command time to update environment before the curl commands 
+    
+![](../Images2/variablecode.png)
+
+47. In the console log in the deploy job you will be able to find the info...
+
+![](../Images2/log.png)
+
+### Ensuring code standards and styles
+
+Different tools can ensure the code respects a set of predefined standards. Some do a static analysis(just look at the code), others a dynamic code analysis(run the code to see how it behaves)
+
+e.g. PMD
+
+1.  PMD is already downloaded in the project (see vid to see it being used in intellij)
+2.  To use PMD in the pipeline script add a command in the test stage
+3.  Create a job called code quality.
+4.  In the script use the command that allows pmd to test the code
+5.  This wil generate a report, so we need to save this using artifacts.
+6.  Usually when the job fails the artifacts won't be saved, but we need them!
+7.  So we need to include a condition that tells it to always save the artifacts.
+
+![](../Images2/pmd.png)
+
+### Unit test stage
+
+Unit tests test a unit of the code, for example a class.<br>
+They have a short execution time and give instant feedback.<br>
+Unit tests are allways at the bottom of the test pyramid.
+
+average build year class.
+
+1. Add a unit test job in test stage.
+2. Script has a command that runs the test
+3. Need artifact that saves the html test reports generated.
+4. Another artifact for all the junit test reports.
+5. Add a condition that wants the reports always.
+
+![](../Images2/unittests.png)
+
+### API Tests
+
+Ensures the API is working properly, and therefore the application is actually working.
+
+1. Use postman to manually test endpoints e.g. /cars
+2. Postman has a test tab that we can also use.
+3. Save some searches in a collection e.g. health
+4. Export the tests
+5. Upload them into the project folder on gitlab
+6. Also export the postman environment as a file
+7. Put it in the root of the project on gitlab
+
+![](../Images2/project.png)
+
+1. We need to use the postman companion tool, Newman CLI, to execute the collection tests.
+2. Add a post deployment stage and api testing stage
+3. Use a docker image that contains newman already.
+4. In script
+   - show the version of newman
+   - run newman, specify the collection, environment and two reporters (e.g. htmlextra generatesva html report), then tell it where to export the reports
+5. Use artifacts to save the reports always.
+
+![](../Images2/apitest.png)
+
+6. There should be a tests tab next to the pipeline tab that shows the tests that ran and how many passed
+
+![](../Images2/testtab.png)
+
+7. The report will be in artifacts
+
+## Publishing HTML reports or dashboards
+
+1. Add publishing stage and pages job
+2. Make new folder called public that will hold all the html files we want to publish
+3. Move report to folder
+4. create a publishing artifact
+
+
+5. After it has run, go to deploy, then pages
+6. This will show you the address it will publish the pages at (may take 30 mins to be available)
+
